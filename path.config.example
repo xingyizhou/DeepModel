@@ -1,1 +1,2 @@
-caffe_root: D:/Projects/DeepModel/caffe/Build/x64/Release/pycaffe/
+pycaffe_root: D:/Projects/DeepModel/caffe/Build/x64/Release/pycaffe/
+NYU_path: D:/Datasets/NYU/

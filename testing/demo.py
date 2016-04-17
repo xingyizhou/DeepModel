@@ -5,7 +5,7 @@ with open('../path.config', 'r') as f:
     name, path = line.split(': ')
     print name, path
     paths[name] = path
-sys.path.insert(0, paths['caffe_root'])
+sys.path.insert(0, paths['pycaffe_root'])
 import caffe
 import numpy as np
 import matplotlib.pyplot as plt
@@ -30,37 +30,40 @@ if __name__ == '__main__':
   net = caffe.Net( 'DeepModel_deploy.prototxt',
                 'weights/NYU.caffemodel',
                 caffe.TEST)
-  img = cv2.imread('test_images\\0.png')
-  input = (cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) / 255. * 2 - 1)
-  blobs_in = {'data': input.reshape(1, 1, img.shape[0], img.shape[1])}
-  out = net.forward(**blobs_in)
-  joint = out['pred'][0]
-  
-  x = np.zeros(J)
-  y = np.zeros(J)
-  z = np.zeros(J)
-  for j in range(J):
-    x[j] = joint[joints[j] * 3]
-    y[j] = joint[joints[j] * 3 + 1]   
-    z[j] = joint[joints[j] * 3 + 2]
-    cv2.circle(img, (int((x[j] + 1) / 2 * 128), int((- y[j] + 1) / 2 * 128)), 2, (255, 0, 0), 2)
-  fig=plt.figure()
-  ax=fig.add_subplot((111),projection='3d')
-  ax.set_xlabel('z')
-  ax.set_ylabel('x')
-  ax.set_zlabel('y')
-  ax.scatter(z, -x, y)
-  for e in Edges:
-    ax.plot(z[e], -x[e], y[e], c = 'b')
-    
-  #For axes equal
-  max_range = np.array([x.max()-x.min(), y.max()-y.min(), z.max()-z.min()]).max()
-  Xb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(x.max()+x.min())
-  Yb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][1].flatten() + 0.5*(y.max()+y.min())
-  Zb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][2].flatten() + 0.5*(z.max()+z.min())
-  for xb, yb, zb in zip(Xb, Yb, Zb):
-     ax.plot([zb], [xb], [yb], 'w')
+  list_images = ['0.png', '772.png', '1150.png', '1350.png', '1739.png']
+  for image_name in list_images:
+      img = cv2.imread('test_images\\' + image_name)
+      cv2.imshow('img_input', img)
+      input = (cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) / 255. * 2 - 1)
+      blobs_in = {'data': input.reshape(1, 1, img.shape[0], img.shape[1])}
+      out = net.forward(**blobs_in)
+      joint = out['pred'][0]
+      
+      x = np.zeros(J)
+      y = np.zeros(J)
+      z = np.zeros(J)
+      for j in range(J):
+        x[j] = joint[joints[j] * 3]
+        y[j] = joint[joints[j] * 3 + 1]   
+        z[j] = joint[joints[j] * 3 + 2]
+        cv2.circle(img, (int((x[j] + 1) / 2 * 128), int((- y[j] + 1) / 2 * 128)), 2, (255, 0, 0), 2)
+      fig=plt.figure()
+      ax=fig.add_subplot((111),projection='3d')
+      ax.set_xlabel('z')
+      ax.set_ylabel('x')
+      ax.set_zlabel('y')
+      ax.scatter(z, -x, y)
+      for e in Edges:
+        ax.plot(z[e], -x[e], y[e], c = 'b')
+        
+      #For axes equal
+      max_range = np.array([x.max()-x.min(), y.max()-y.min(), z.max()-z.min()]).max()
+      Xb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(x.max()+x.min())
+      Yb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][1].flatten() + 0.5*(y.max()+y.min())
+      Zb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][2].flatten() + 0.5*(z.max()+z.min())
+      for xb, yb, zb in zip(Xb, Yb, Zb):
+         ax.plot([zb], [xb], [yb], 'w')
 
-  cv2.imshow('img', img)
-  plt.show()
+      cv2.imshow('img_pred', img)
+      plt.show()
   

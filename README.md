@@ -1,23 +1,23 @@
 # Model-based Deep Hand Pose Estimation
-This repository is the released code of our IJCAI 2016 paper for estimating hand pose from depth image.
+This repository is the released code of our IJCAI 2016 [paper](http://xingyizhou.xyz/zhou2016model.pdf) for estimating hand pose from depth image.
 
 Contact: zhouxy13@fudan.edu.cn
 
 ## Requirements
 - Caffe
-- Python with opencv and h5py
+- Python with opencv
 
 ## Installation
 - Download [caffe](http://caffe.berkeleyvision.org/) 
-- Copy path.config.example to path.config and set the caffe root path
 - Copy ./libs/include to caffe_root/include and ./libs/src to caffe_root/src
 - Compile caffe
+- Copy path.config.example to path.config and set the pycaffe path
 
 ## Test
 - Run demo.py in ./testing
  
 ## Train
-Coming soon.
+- Coming soon.
 
 ## Citation
 
