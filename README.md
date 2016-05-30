@@ -15,7 +15,8 @@ Contact: zhouxy13@fudan.edu.cn
 
 ## Test
 - Run demo.py in ./testing
- 
+- Our prediction on NYU dataset [here](http://xingyizhou.xyz/IJCAI16_NYU.txt)
+- Our prediction on ICVL dataset [here](http://xingyizhou.xyz/IJCAI16_ICVL.txt)
 ## Train
 - Coming soon.
 
