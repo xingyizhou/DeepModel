@@ -1,0 +1,251 @@
+name: "DeepModel"
+
+layer {
+  name: "data"
+  type: "HDF5Data"
+  top: "depth"
+  top: "joint"
+  hdf5_data_param {
+    source:"train.txt"
+    batch_size:512
+  }
+  include {
+    phase: TRAIN
+  }
+}
+
+layer {
+  name: "data"
+  type: "HDF5Data"
+  top: "depth"
+  top: "joint"
+  hdf5_data_param {
+    source:"test.txt"
+    batch_size: 64
+  }
+  include {
+    phase: TEST
+  }
+}
+
+
+layer {
+  name: "convL1"
+  type: "Convolution"
+  bottom: "depth"
+  top: "convL1"
+  convolution_param {
+    num_output: 8
+    kernel_size: 5
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer {
+  name: "ReLUconvL1"
+  type: "ReLU"
+  bottom: "convL1"
+  top: "convL1"
+}
+
+
+layer {
+  name: "poolL1"
+  type: "Pooling"
+  bottom: "convL1"
+  top: "poolL1"
+  pooling_param {
+    pool: MAX
+    kernel_size: 4
+    stride: 4
+  }
+}
+
+layer {
+  name: "convL2"
+  type: "Convolution"
+  bottom: "poolL1"
+  top: "convL2"
+  convolution_param {
+    num_output: 8
+    kernel_size: 5
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer {
+  name: "ReLUconvL2"
+  type: "ReLU"
+  bottom: "convL2"
+  top: "convL2"
+}
+
+layer {
+  name: "poolL2"
+  type: "Pooling"
+  bottom: "convL2"
+  top: "poolL2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+
+
+layer {
+  name: "convL3"
+  type: "Convolution"
+  bottom: "poolL2"
+  top: "convL3"
+  convolution_param {
+    num_output: 8
+    kernel_size: 3
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer {
+  name: "ReLUconvL3"
+  type: "ReLU"
+  bottom: "convL3"
+  top: "convL3"
+}
+
+
+layer {
+  name: "FC1"
+  type: "InnerProduct"
+  bottom: "convL3"
+  top: "FC1"
+  param {
+    lr_mult: 1
+  }
+  inner_product_param {
+    num_output: 1024
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer {
+  name: "ReLUFC1"
+  type: "ReLU"
+  bottom: "FC1"
+  top: "FC1"
+}
+
+layer {
+  name: "DropoutFC1"
+  type: "Dropout"
+  bottom: "FC1"
+  top: "FC1"
+  dropout_param {
+    dropout_ratio: 0.3
+  }
+}
+
+
+layer {
+  name: "FC2"
+  type: "InnerProduct"
+  bottom: "FC1"
+  top: "FC2"
+  param {
+    lr_mult: 1
+  }
+  inner_product_param {
+    num_output: 1024
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer {
+  name: "ReLUFC2"
+  type: "ReLU"
+  bottom: "FC2"
+  top: "FC2"
+}
+
+layer {
+  name: "DropoutFC2"
+  type: "Dropout"
+  bottom: "FC2"
+  top: "FC2"
+  dropout_param {
+    dropout_ratio: 0.3
+  }
+}
+
+layer {
+  name: "DoF"
+  type: "InnerProduct"
+  bottom: "FC2"
+  top: "DoF"
+  param {
+    lr_mult: 1
+  }
+  inner_product_param {
+    num_output: 47
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+
+layer {
+  name: "DeepHandModel"
+  type: "DeepHandModel"
+  bottom: "DoF"
+  top: "DeepHandModelxyz"
+}
+
+# uncomment to enable dof constraint 
+#layer {
+#  name: "DoFConstraintLoss"
+#  type: "DeepHandModelDofConstraintLoss"
+#  bottom: "DoF"
+#  top: "DoFConstraintLoss"
+#  loss_weight: 1
+#}
+
+
+layer{
+  name:"DeepHandModelxyzloss"
+  type:"EuclideanLoss"
+  bottom:"DeepHandModelxyz"
+  bottom:"joint"
+  top:"DeepHandModelxyzloss"
+  loss_weight: 1
+}
+

@@ -19,7 +19,10 @@ Contact: zhouxy13@fudan.edu.cn
 - Our prediction on ICVL dataset [here](http://xingyizhou.xyz/IJCAI16_ICVL.txt)
 
 ## Train
-- Coming soon.
+- download [NYU](http://cims.nyu.edu/~tompson/NYU_Hand_Pose_Dataset.htm#download) dataset
+- set NYU_path in path.config
+- Run GetH5DataNYU.py in ./training
+- Train with solver.prototxt
 
 ## Citation
 
